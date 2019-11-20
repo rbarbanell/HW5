@@ -27,6 +27,13 @@ import java.util.*;
  */
 
 public class AdvRoom extends AdvRoomStub {
+	
+	private int roomNum;
+	private String name;
+	private ArrayList<String> desc;
+	private ArrayList<AdvObject> objects;
+	private boolean visited;
+	private ArrayList<AdvMotionTableEntry> motionTable;
 
 	/* Method: getRoomNumber() */
 	/**
@@ -36,7 +43,7 @@ public class AdvRoom extends AdvRoomStub {
 	 * @return The room number
 	 */
 	public int getRoomNumber() {
-		return super.getRoomNumber(); // Replace with your code
+		return this.roomNum; // Replace with your code
 	}
 
 	/* Method: getName() */
@@ -47,7 +54,7 @@ public class AdvRoom extends AdvRoomStub {
 	 * @return The room name
 	 */
 	public String getName() {
-		return super.getName(); // Replace with your code
+		return this.name; // Replace with your code
 	}
 
 	/* Method: getDescription() */
@@ -59,7 +66,7 @@ public class AdvRoom extends AdvRoomStub {
 	 * @return An array of strings giving the long description of the room
 	 */
 	public String[] getDescription() {
-		return super.getDescription(); // Replace with your code
+		return this.desc.toArray(new String[this.desc.size()]); // Replace with your code
 	}
 
 	/* Method: addObject(obj) */
@@ -71,7 +78,7 @@ public class AdvRoom extends AdvRoomStub {
 	 *            AdvObject to be added
 	 */
 	public void addObject(AdvObject obj) {
-		super.addObject(obj);
+		this.objects.add(obj);
 	}
 
 	/* Method: removeObject(obj) */
@@ -83,7 +90,7 @@ public class AdvRoom extends AdvRoomStub {
 	 *            AdvObject to be removed
 	 */
 	public void removeObject(AdvObject obj) {
-		super.removeObject(obj);
+		this.objects.remove(obj);
 	}
 
 	/* Method: containsObject(obj) */
@@ -96,7 +103,7 @@ public class AdvRoom extends AdvRoomStub {
 	 * @return true if the object is in the room, and false otherwise
 	 */
 	public boolean containsObject(AdvObject obj) {
-		return super.containsObject(obj);
+		return this.objects.contains(obj);
 	}
 
 	/* Method: getObjectCount() */
@@ -107,7 +114,7 @@ public class AdvRoom extends AdvRoomStub {
 	 * @return The number of objects in the room
 	 */
 	public int getObjectCount() {
-		return super.getObjectCount();
+		return this.objects.size();
 	}
 
 	/* Method: getObject(index) */
@@ -118,7 +125,7 @@ public class AdvRoom extends AdvRoomStub {
 	 * @return The AdvObject at the specified index position
 	 */
 	public AdvObject getObject(int index) {
-		return super.getObject(index);
+		return this.objects.get(index);
 	}
 
 	/* Method: setVisited(flag) */
@@ -133,7 +140,7 @@ public class AdvRoom extends AdvRoomStub {
 	 *            The new state of the "visited" flag
 	 */
 	public void setVisited(boolean flag) {
-		super.setVisited(flag); // Replace with your code
+		this.visited = flag;// Replace with your code
 	}
 
 	/* Method: hasBeenVisited() */
@@ -144,7 +151,7 @@ public class AdvRoom extends AdvRoomStub {
 	 * @return true if the room has been visited; false otherwise
 	 */
 	public boolean hasBeenVisited() {
-		return super.hasBeenVisited(); // Replace with your code
+		return this.visited; // Replace with your code
 	}
 
 	/* Method: getMotionTable() */
@@ -156,8 +163,8 @@ public class AdvRoom extends AdvRoomStub {
 	 * @usage AdvMotionTableEntry[] motionTable = room.getMotionTable();
 	 * @return The array of motion table entries associated with this room
 	 */
-	public AdvMotionTableEntry[] getMotionTable() {
-		return super.getMotionTable(); // Replace with your code
+	public AdvMotionTableEntry[] getMotionTable() {//do this last(might be complicated)
+		return this.motionTable.toArray(new AdvMotionTableEntry[this.motionTable.size()]); // Replace with your code
 	}
 
 	/* Method: readFromFile(rd) */
@@ -173,8 +180,49 @@ public class AdvRoom extends AdvRoomStub {
 	 * @return a room if successfully read; null if at end of file
 	 */
 	public static AdvRoom readFromFile(Scanner scan) {
-		return AdvRoomStub.readFromFile(scan); // Replace with your code
+		while(scan.hasNextLine()) {
+			String line = scan.nextLine();
+			if(line.length() != 0) {
+				int room = Integer.parseInt(line);
+				String name = scan.nextLine();
+				ArrayList<String> desc = new ArrayList<String>();
+				String descLine = scan.nextLine();
+				while(!descLine.equals("-----")) {
+					desc.add(descLine);
+					descLine = scan.nextLine();
+				}
+				ArrayList<AdvMotionTableEntry> motionTable = new ArrayList<AdvMotionTableEntry>();
+				while(scan.hasNextLine()) {
+					String[] lines = scan.nextLine().split("\\s+"); // pattern matcher(Found online) we split based on blank spaces. 
+					if(lines.length == 1)break;
+					String key = null;
+					if(lines[1].contains("/")) {
+						String[] split = lines[1].split("/");
+						lines[1] = split[0];
+						key = split[1];
+					}
+					AdvMotionTableEntry entry = new AdvMotionTableEntry(lines[0], Integer.parseInt(lines[1]), key); 
+					motionTable.add(entry);
+				}
+				return new AdvRoom(room,name,desc,motionTable);
+			}
+			
+			
+		}
+		return null;
+		
+		// Replace with your code
 	}
+	private AdvRoom(int roomNum, String name, ArrayList<String> desc, ArrayList<AdvMotionTableEntry> motionTable) {
+		this.roomNum = roomNum;
+		this.name = name;
+		this.desc = desc;
+		this.objects = new ArrayList<AdvObject>();
+		this.motionTable = motionTable;
+		this.visited = false;
+	}
+	
+	//make a new constructor
 
 	/* Private instance variables */
 	// Add your own instance variables here
