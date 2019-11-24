@@ -30,7 +30,22 @@ public class Adventure extends AdventureStub {
 	 * Runs the adventure program
 	 */
 	public static void main(String[] args) {
-		AdventureStub.main(args); // Replace with your code
+		System.out.print("What will be your adventure today?");
+		//need to make an instance of the game and put this code in the constructor instead.
+		String adventure = scan.nextLine();
+		boolean isValid = false;
+		//If did not get createdSuccessfully then run again
+		while(!isValid) {
+			try {
+				Adventure game = new Adventure(adventure);
+				//game.run(); Need to add Adventure.run.
+				isValid = true;
+			} catch (IOException e) {
+				System.out.println(e);
+				System.out.println("Bad input, please Try again. ");
+				adventure = scan.nextLine();
+			}
+		}
 	}
 
 	/* Method: executeMotionCommand(direction) */
@@ -102,10 +117,55 @@ public class Adventure extends AdventureStub {
 	 * @param obj
 	 *            The AdvObject you want to drop
 	 */
-	public void executeDropCommand(AdvObject obj) {
+	public void executeDropCommand(AdvObject obj){
 		super.executeDropCommand(obj); // Replace with your code
 	}
 
 	/* Private instance variables */
 	// Add your own instance variables here
+	public Adventure(String adventure) throws FileNotFoundException {
+		//get rooms file
+		File f = new File(adventure + "Rooms.txt");
+		//make scanner for file
+		Scanner s = new Scanner(f);
+		//read the first room
+		AdvRoom r = AdvRoom.readFromFile(s);
+		//while there are more rooms load them.
+		while(r!=null) {
+			rooms.put(r.getRoomNumber(), r);
+			r  = AdvRoom.readFromFile(s);
+		}
+		
+		//get objects
+		f = new File(adventure + "Objects.txt");
+		//make scanner for file
+		s = new Scanner(f);
+		//read the first Object
+		AdvObject o = AdvObject.readFromFile(s);
+		//while there are more objects, load them.
+		while(o!=null) {
+			objects.add(o);
+			o  = AdvObject.readFromFile(s);
+		}
+		
+		//get commands
+		f = new File(adventure + "Synonyms.txt");
+		//make scanner for file
+		s = new Scanner(f);
+		//read the first command
+		while(s.hasNextLine()) {
+			//create a key value pair from that line
+			String line = s.nextLine();
+			String[] sarray = line.split("=");
+			commands.put(sarray[0], sarray[1]);
+		}
+		s.close();
+		System.out.println("Successfully created!");
+		
+	}
+	//Private Vars
+	private  TreeMap<Integer, AdvRoom> rooms = new TreeMap<Integer, AdvRoom>();
+	private  ArrayList<AdvObject> objects = new ArrayList<>();
+	private  Map<String,String> commands = new TreeMap<String, String>();
+
 }
